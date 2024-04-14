@@ -14,7 +14,7 @@ def fetch_sales_order():
     sales_order_url = None
 
     for collection in root.findall('.//app:collection', ns):
-        if 'Sales_Order' in collection.get('href'):
+        if 'Orders' in collection.get('href'):
             sales_order_url = urljoin(base_url, collection.get('href'))
             break
 
@@ -65,11 +65,13 @@ def calculate_gross_revenue(df):
         return df['LineTotal'].sum()
     return 0
 
-def compute_daily_revenue(df):
-    if not df.empty:
-        df['OrderDate'] = pd.to_datetime(df['OrderDate'])
-        daily_revenue = df.groupby(df['OrderDate'].dt.date)['Gross_Revenue'].sum()
-        return daily_revenue
-    else:
-        return pd.Series()
+def compute_daily_revenue(merged_df):
+    # Assuming 'Order_Date' is a column in 'sales_order_df'
 
+    # Ensure the 'OrderDate' column is converted to datetime objects
+    merged_df['OrderDate'] = pd.to_datetime(merged_df['OrderDate'], errors='coerce')
+
+
+    # Calculate daily gross revenue
+    daily_revenue = merged_df.groupby(merged_df['OrderDate'].dt.date)['LineTotal'].sum()
+    return daily_revenue.reset_index(name='LineTotal')
