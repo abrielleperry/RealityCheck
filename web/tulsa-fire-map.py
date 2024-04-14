@@ -1,66 +1,56 @@
-from dash import Dash, dcc, html, Input, Output, ctx
+# pip install dash pandas plotly
+from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 import pandas as pd
 
-# Load the dataset (replace the URL with the actual data URL)
-df = pd.read_csv('data/fire.csv', dtype={'date': str})  # Read the date as string
+# Load your dataset
+df = pd.read_csv('data/fire.csv')
 
-print(df.head())
-# Check the columns to ensure 'date' is present
-print(df.columns)
+# Ensure the 'date' column is treated as datetime type
+df['date'] = pd.to_datetime(df['date'])
 
-# Assuming 'date' is correct and now present in df.columns, parse it
-df['date'] = pd.to_datetime(df['date'], format='%m-%d-%y')
+# Extract year and month for grouping
+df['year_month'] = df['date'].dt.to_period('M')
 
-# Extract year and month for filtering
-df['year'] = df['date'].dt.year
-df['month'] = df['date'].dt.month
-
-# Start the Dash app
+# Create a Dash application
 app = Dash(__name__)
 
+# Define the layout of the application
 app.layout = html.Div([
-    html.Div([
-        dcc.Dropdown(
-            id='incident-type-dropdown',
-            options=[{'label': i, 'value': i}
-                     for i in df['incident'].unique()],
-            value=df['incident'].unique()[0]
-        )
-    ]),
-    dcc.Graph(id='graph-with-slider'),
-    dcc.Slider(
-        min=df['month'].min(),
-        max=df['month'].max(),
-        step=1,
-        value=df['month'].min(),
-        marks={str(month): f"{month:02d}" for month in range(
-            1, 13)},  # Ensure months are shown as two digits
-        id='month-slider'
+    dcc.Graph(id='incident-graph'),
+    dcc.Dropdown(
+        id='incident-type-dropdown',
+        options=[{'label': i, 'value': i} for i in df['incident'].unique()],
+        value=df['incident'].unique()[0]
     )
 ])
 
+# Callback to update the graph based on selected incident type
+
 
 @app.callback(
-    Output('graph-with-slider', 'figure'),
-    [Input('month-slider', 'value'),
-     Input('incident-type-dropdown', 'value')])
-def update_figure(selected_month, selected_incident):
-    filtered_df = df[(df.month == selected_month) &
-                     (df.incident == selected_incident)]
-    filtered_df = filtered_df.groupby(
-        ['date', 'incident']).size().reset_index(name='count')
+    Output('incident-graph', 'figure'),
+    Input('incident-type-dropdown', 'value'))
+def update_figure(selected_incident):
+    # Filter data by selected incident type
+    filtered_df = df[df.incident == selected_incident]
 
-    # Creating a line plot for the number of incidents over time
-    fig = px.line(
-        filtered_df,
-        x='date',
-        y='count',
-        title='Incidents Over Time',
-        color='incident')
+    # Group by year and month
+    grouped_df = filtered_df.groupby(
+        'year_month').size().reset_index(name='counts')
 
+    # Plotting
+    fig = px.line(grouped_df, x='year_month', y='counts',
+                  title=f'Incident Type: {selected_incident} Over Time')
+
+    # Update layout
+    fig.update_layout(
+        xaxis_title='Month',
+        yaxis_title='Number of Incidents',
+        xaxis_type='category')
     return fig
 
 
+# Run the server
 if __name__ == '__main__':
     app.run_server(debug=True)
