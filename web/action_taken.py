@@ -22,7 +22,6 @@ app.layout = html.Div([
 ])
 
 
-
 @app.callback(
     Output('incident-bar-chart', 'figure'),
     [Input('incident-type-dropdown', 'value')]
