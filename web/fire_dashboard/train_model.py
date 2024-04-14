@@ -7,7 +7,7 @@ from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import mean_squared_error
 import pickle
 
-data = pd.read_csv('data/fire-datetime.csv')
+data = pd.read_csv('../data/fire-datetime.csv')
 data['datetime'] = pd.to_datetime(
     data['datetime'],
     format='%Y-%m-%d %I:%M:%S %p',

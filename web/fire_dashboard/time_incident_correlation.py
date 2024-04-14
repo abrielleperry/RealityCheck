@@ -3,7 +3,7 @@ import plotly.express as px
 from dash import Dash, html, dcc
 from dash.dependencies import Input, Output
 
-file_path = 'data/fire.csv'
+file_path = '../data/fire.csv'
 data = pd.read_csv(file_path)
 
 data['time'] = pd.to_datetime(data['time'], format='%H:%M:%S').dt.hour

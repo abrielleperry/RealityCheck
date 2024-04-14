@@ -2,7 +2,7 @@ from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 import pandas as pd
 
-df = pd.read_csv('data/fire.csv')
+df = pd.read_csv('../data/fire.csv')
 
 df = df.dropna(subset=['incident'])
 df['incident'] = df['incident'].astype(str)

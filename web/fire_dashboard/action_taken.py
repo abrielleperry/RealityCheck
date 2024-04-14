@@ -4,7 +4,7 @@ from dash import dcc, html
 from dash.dependencies import Input, Output
 import plotly.express as px
 
-df = pd.read_csv("data/fire.csv")
+df = pd.read_csv("../data/fire.csv")
 
 app = dash.Dash(__name__)
 
