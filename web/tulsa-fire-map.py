@@ -5,18 +5,16 @@ import pandas as pd
 # Load the dataset (replace the URL with the actual data URL)
 df = pd.read_csv('data/fire.csv', dtype={'date': str})  # Read the date as string
 
-df = pd.read_csv(file_path, skiprows=2, header=1)
-
-# Convert 'Date' to datetime
-df['Date'] = pd.to_datetime(df['Date'], format='%m/%d/%y')
-
-# Extract year and month for filtering (if needed)
-df['Year'] = df['Date'].dt.year
-df['Month'] = df['Date'].dt.month
-
-# Display the first few rows to confirm the structure
 print(df.head())
+# Check the columns to ensure 'date' is present
 print(df.columns)
+
+# Assuming 'date' is correct and now present in df.columns, parse it
+df['date'] = pd.to_datetime(df['date'], format='%m-%d-%y')
+
+# Extract year and month for filtering
+df['year'] = df['date'].dt.year
+df['month'] = df['date'].dt.month
 
 # Start the Dash app
 app = Dash(__name__)
