@@ -6,9 +6,11 @@ import pandas as pd
 import numpy as np
 import pickle
 
-# Load your trained model (assuming it's saved as 'model.pkl')
+# Load your trained model and feature names
 with open('model.pkl', 'rb') as f:
     model = pickle.load(f)
+with open('feature_names.pkl', 'rb') as f:
+    feature_names = pickle.load(f)
 
 # Initialize the app
 app = dash.Dash(__name__, external_stylesheets=[
@@ -16,47 +18,47 @@ app = dash.Dash(__name__, external_stylesheets=[
 
 app.layout = html.Div([
     html.H1("Emergency Incident Prediction Dashboard"),
-    html.Div([
-        html.Div([
-            dcc.DatePickerSingle(
-                id='input-date',
-                min_date_allowed=pd.to_datetime('2021-01-01'),
-                max_date_allowed=pd.to_datetime('2023-12-31'),
-                initial_visible_month=pd.to_datetime('2023-01-01'),
-                date=str(pd.to_datetime('2023-01-01'))
-            ),
-        ], style={'margin': '20px'}),
-        html.Button('Predict', id='predict-button', n_clicks=0),
-        html.Div(id='prediction-output', style={'margin': '20px'})
-    ]),
+    dcc.DatePickerSingle(
+        id='input-date',
+        min_date_allowed=pd.to_datetime('2024-05-01'),
+        max_date_allowed=pd.to_datetime('2025-05-01'),
+        initial_visible_month=pd.to_datetime('2024-05-01'),
+        date=str(pd.to_datetime('2024-05-01'))
+    ),
+    html.Button('Predict', id='predict-button', n_clicks=0),
+    html.Div(id='prediction-output', style={'margin': '20px'}),
     dcc.Graph(id='feature-importance-plot')
 ])
 
 
 @app.callback(
     Output('prediction-output', 'children'),
-    [Input('predict-button', 'n_clicks')],
-    [dash.dependencies.State('input-date', 'date')]
+    Input('predict-button', 'n_clicks'),
+    dash.dependencies.State('input-date', 'date')
 )
 def update_output(n_clicks, date):
     if n_clicks > 0:
-        # Example feature preparation based on date input (needs proper
-        # implementation)
-        features = np.random.rand(1, 10)  # Example features
-        prediction = model.predict(features)[0]
+        # Create a DataFrame with the correct structure
+        # Here we use random data as a placeholder; replace this with actual
+        # feature preparation logic
+        features_df = pd.DataFrame(
+            np.random.rand(
+                1,
+                len(feature_names)),
+            columns=feature_names)
+        prediction = model.predict(features_df)[0]
         return f"Predicted number of incidents on {date}: {prediction:.0f}"
 
 
 @app.callback(
     Output('feature-importance-plot', 'figure'),
-    [Input('predict-button', 'n_clicks')]
+    Input('predict-button', 'n_clicks')
 )
 def update_graph(n_clicks):
     if n_clicks > 0:
         importances = model.feature_importances_
-        features = ['feature_' + str(i) for i in range(len(importances))]
         df = pd.DataFrame({
-            'Feature': features,
+            'Feature': feature_names,
             'Importance': importances
         })
         fig = px.bar(
