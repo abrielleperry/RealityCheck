@@ -2,24 +2,18 @@ from dash import Dash, dcc, html, Input, Output
 import plotly.express as px
 import pandas as pd
 
-# Load the dataset
 df = pd.read_csv('data/fire.csv')
 
-# Ensure the 'incident' column is of string type and drop any rows where
-# 'incident' is null
 df = df.dropna(subset=['incident'])
 df['incident'] = df['incident'].astype(str)
 
-# Convert 'date' to datetime and extract the month as 'YYYY-MM' format for
-# simplicity
+
 df['date'] = pd.to_datetime(df['date'])
 df['month'] = df['date'].dt.strftime('%Y-%m')
 
-# Group by month and incident type
 monthly_incidents = df.groupby(
     ['month', 'incident']).size().reset_index(name='count')
 
-# Create the Dash app
 app = Dash(__name__)
 
 app.layout = html.Div([
@@ -28,7 +22,6 @@ app.layout = html.Div([
         id='incident-dropdown',
         options=[{'label': i, 'value': i}
                  for i in df['incident'].unique() if i is not None],
-        # Default value, assuming there is at least one incident type
         value=df['incident'].unique()[0]
     ),
     dcc.Graph(id='incident-graph')

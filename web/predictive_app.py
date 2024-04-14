@@ -1,18 +1,16 @@
 import dash
-from dash import dcc, html  # Updated import statements
+from dash import dcc, html
 from dash.dependencies import Input, Output
 import plotly.express as px
 import pandas as pd
 import numpy as np
 import pickle
 
-# Load your trained model and feature names
 with open('model.pkl', 'rb') as f:
     model = pickle.load(f)
 with open('feature_names.pkl', 'rb') as f:
     feature_names = pickle.load(f)
 
-# Initialize the app
 app = dash.Dash(__name__, external_stylesheets=[
                 'https://codepen.io/chriddyp/pen/bWLwgP.css'])
 
@@ -38,9 +36,6 @@ app.layout = html.Div([
 )
 def update_output(n_clicks, date):
     if n_clicks > 0:
-        # Create a DataFrame with the correct structure
-        # Here we use random data as a placeholder; replace this with actual
-        # feature preparation logic
         features_df = pd.DataFrame(
             np.random.rand(
                 1,
@@ -70,6 +65,5 @@ def update_graph(n_clicks):
     return dash.no_update
 
 
-# Run the app
 if __name__ == '__main__':
     app.run_server(debug=True)
