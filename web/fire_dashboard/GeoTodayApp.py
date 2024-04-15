@@ -51,7 +51,7 @@ filters_layout = html.Div([
     dbc.Label("Select Problems:"),
     dbc.Checklist(
         id='problem-filter',
-        options=[{'label': 'Select All', 'value': 'All'}] + \
+        options=[{'label': 'Unselect All', 'value': 'None'}, {'label': 'Select All', 'value': 'All'}] + \
         [{'label': problem, 'value': problem} for problem in problems],
         value=['All'],  # Default value
         inline=False
@@ -111,8 +111,14 @@ def update_map(selected_year, selected_month, selected_problems):
     [Input('problem-filter', 'value')],
     [State('problem-filter', 'options')])
 def select_all_problems(selected_problems, options):
-    if 'All' in selected_problems:
-        return [option['value'] for option in options]
+    if 'All' in selected_problems and 'None' not in selected_problems:
+            # If 'All' is selected and 'None' is not, select everything except
+            # 'None'
+            return [option['value']
+                for option in options if option['value'] != 'None']
+    elif 'None' in selected_problems:
+            # If 'None' is selected, unselect everything
+            return []
     return selected_problems
 
 

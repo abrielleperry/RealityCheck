@@ -17,7 +17,7 @@ pivot_table = data.pivot_table(
 app = Dash(__name__)
 
 app.layout = html.Div([
-    html.H1("Incident Analysis with Time Filter"),
+    html.H1("Time and Incident Correlation"),
     dcc.RangeSlider(
         id='time-range-slider',
         min=0,

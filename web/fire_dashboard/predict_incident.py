@@ -6,16 +6,16 @@ import pandas as pd
 import numpy as np
 import pickle
 
-with open('model.pkl', 'rb') as f:
+with open('pickle/model.pkl', 'rb') as f:
     model = pickle.load(f)
-with open('feature_names.pkl', 'rb') as f:
+with open('pickle/feature_names.pkl', 'rb') as f:
     feature_names = pickle.load(f)
 
 app = dash.Dash(__name__, external_stylesheets=[
                 'https://codepen.io/chriddyp/pen/bWLwgP.css'])
 
 app.layout = html.Div([
-    html.H1("Emergency Incident Prediction Dashboard"),
+    html.H1("Incident Prediction"),
     dcc.DatePickerSingle(
         id='input-date',
         min_date_allowed=pd.to_datetime('2024-05-01'),
