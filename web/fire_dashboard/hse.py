@@ -21,7 +21,7 @@ fig = px.bar(filtered_incidents, x='incident', y='count', title='Frequency of In
              color_continuous_scale=px.colors.qualitative.Plotly)
 
 # Set graph size
-fig.update_layout(width=1000, height=800, xaxis_tickangle=-45)
+fig.update_layout(width=1200, height=800)
 
 # Adjust y-axis to include all incidents plus some additional space
 max_count = filtered_incidents['count'].max()
@@ -32,7 +32,7 @@ app = Dash(__name__)
 
 # Define the layout of the app
 app.layout = html.Div(children=[
-    html.H1(children='Incident Analysis for Location "HSE"'),
+    html.H1(children='Incident Analysis for Houses'),
     dcc.Graph(
         id='incident-graph',
         figure=fig
