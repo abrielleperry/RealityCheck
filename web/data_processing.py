@@ -4,7 +4,7 @@ from xml.etree import ElementTree as ET
 from urllib.parse import urljoin
 
 def get_merged_df():
-        # Assuming 'order_details_df' is already fetched somewhere in your code
+    # Assuming 'order_details_df' is already fetched somewhere in your code
     order_details_df = fetch_order_details()
     sales_order_df = fetch_sales_order()
     # print(sales_order_df.columns)
@@ -73,8 +73,7 @@ def fetch_order_details():
 
 def calculate_gross_revenue(df):
     if not df.empty:
-        print(df.columns)
-
+        #Sprint(df.columns)
         # Convert columns to numeric types, use errors='coerce' to handle any conversion issues
         df['UnitPrice'] = pd.to_numeric(df['UnitPrice'], errors='coerce')
         df['Quantity'] = pd.to_numeric(df['Quantity'], errors='coerce')
