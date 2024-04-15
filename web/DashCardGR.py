@@ -2,6 +2,7 @@ from dash import Dash, html, dcc
 import dash_bootstrap_components as dbc
 import data_processing as dp
 import plotly.express as px
+import DashCardPlot as fig
 
 # Fetch and calculate the data
 order_details_df = dp.fetch_order_details()
@@ -19,7 +20,7 @@ app.layout = dbc.Container(
                 [
                     html.H4("Gross Revenue", className="card-title"),
                     html.P(f"${gross_revenue:,.2f}", className="card-text"),
-                    #dcc.Graph(figure=fig)
+                    dcc.Graph(figure=fig)
                 ]
             ),
         ],

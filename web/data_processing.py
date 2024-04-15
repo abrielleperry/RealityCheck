@@ -3,6 +3,27 @@ import requests
 from xml.etree import ElementTree as ET
 from urllib.parse import urljoin
 
+def get_merged_df():
+        # Assuming 'order_details_df' is already fetched somewhere in your code
+    order_details_df = fetch_order_details()
+    sales_order_df = fetch_sales_order()
+    # print(sales_order_df.columns)
+    # print(order_details_df.columns)
+    # Ensure that 'OrderID' is of the same type in both DataFrames
+    sales_order_df['OrderID'] = sales_order_df['OrderID'].astype(str)
+    order_details_df['OrderID'] = order_details_df['OrderID'].astype(str)
+    gross_revenue = calculate_gross_revenue(order_details_df)
+    # Merge the two DataFrames on 'OrderID'
+    merged_df = pd.merge(sales_order_df, order_details_df, on='OrderID')
+
+    # Check columns after merge
+    # print(merged_df.columns)
+
+    # If 'Gross_Revenue' column is not found, raise an error
+    if 'LineTotal' not in merged_df.columns:
+        raise KeyError("Column 'LineTotal' not found after merging dataframes.")
+    
+    return merged_df
 
 def fetch_sales_order():
     base_url = "https://services.odata.org/V3/northwind/Northwind.svc/"
