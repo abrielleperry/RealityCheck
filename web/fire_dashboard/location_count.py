@@ -3,7 +3,7 @@ from dash import dcc, html
 import pandas as pd
 import plotly.express as px
 
-# Load the data
+
 df = pd.read_csv('../data/fire.csv')
 
 # Exclude specific location names

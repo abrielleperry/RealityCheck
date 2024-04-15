@@ -18,15 +18,15 @@ app.layout = html.Div([
         value=[df['incident'].dropna().unique()[0]],
         multi=True
     ),
-    dcc.Graph(id='incident-bar-chart')
+    dcc.Graph(id='action-taken-bar-chart')
 ])
 
 
 @app.callback(
-    Output('incident-bar-chart', 'figure'),
+    Output('action-taken-bar-chart', 'figure'),
     [Input('incident-type-dropdown', 'value')]
 )
-def update_bar_chart(selected_incidents):
+def update_action_taken_chart(selected_incidents):
     if not selected_incidents:
         return px.bar()
     filtered_df = df[df['incident'].isin(selected_incidents)]

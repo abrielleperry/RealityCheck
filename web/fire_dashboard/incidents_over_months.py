@@ -24,14 +24,14 @@ app.layout = html.Div([
                  for i in df['incident'].unique() if i is not None],
         value=df['incident'].unique()[0]
     ),
-    dcc.Graph(id='incident-graph')
+    dcc.Graph(id='incident-over-months-chart')
 ])
 
 
 @app.callback(
-    Output('incident-graph', 'figure'),
+    Output('incident-over-months-chart', 'figure'),
     Input('incident-dropdown', 'value'))
-def update_graph(selected_incident):
+def update_incidents_over_months_chart(selected_incident):
     filtered_data = monthly_incidents[monthly_incidents['incident']
                                       == selected_incident]
 
