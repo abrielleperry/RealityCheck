@@ -55,27 +55,48 @@ app.layout = dbc.Container(
             "Interactive Incident Report",
             style={"textAlign": "center", "marginTop": 20},
         ),
+        dbc.Container(
+            [
+                dbc.Row(
+                    [
+                        dbc.Col(
+                            [
+                                html.Label("Select Incident Type:"),
+                                dcc.Dropdown(
+                                    id="incident-type-dropdown",
+                                    options=[
+                                        {"label": i, "value": i}
+                                        for i in static_df["incident"].dropna().unique()
+                                    ],
+                                    value=static_df["incident"].dropna().unique()[0],
+                                    multi=True,
+                                    clearable=True,
+                                    searchable=True,
+                                ),
+                                dcc.Graph(id="action-taken-bar-chart"),
+                            ],
+                            md=5,
+                            style={"padding": 10},
+                        ),
+                        dbc.Col(
+                            [
+                                dcc.Graph(id="live-incident-pie-chart"),
+                            ],
+                            md=7,
+                            style={"padding": 10},
+                        ),
+                    ],
+                    style={"marginTop": 10},
+                ),
+            ]
+        ),
+        dbc.Placeholder(color="info", className="me-1 mt-1 w-100"),
+        dbc.Container(
+            [html.H2("Live Incident Map")],
+            style={"textAlign": "center", "marginTop": 20},
+        ),
         dbc.Row(
             [
-                dbc.Col(
-                    [
-                        html.Label("Select Incident Type:"),
-                        dcc.Dropdown(
-                            id="incident-type-dropdown",
-                            options=[
-                                {"label": i, "value": i}
-                                for i in static_df["incident"].dropna().unique()
-                            ],
-                            value=static_df["incident"].dropna().unique()[0],
-                            multi=True,
-                            clearable=True,
-                            searchable=True,
-                        ),
-                        dcc.Graph(id="action-taken-bar-chart"),
-                    ],
-                    md=4,
-                    style={"padding": 10},
-                ),
                 dbc.Col(
                     [
                         html.Label("Select Problems:"),
@@ -92,26 +113,26 @@ app.layout = dbc.Container(
                             value=["All"],
                             inline=False,
                         ),
-                        dcc.Graph(id="live-incident-pie-chart"),
-                    ],
-                    md=8,
-                    style={"padding": 10},
+                    ]
                 ),
-            ],
-            style={"marginTop": 10},
-        ),
-        dbc.Row(
-            [
-                html.H2("Live Incident Map"),
-                dcc.Graph(
-                    id="incident-map", style={"width": "100%", "height": "600px"}
+                dbc.Col(
+                    [
+                        dcc.Graph(
+                            id="incident-map",
+                            style={"width": "900px", "height": "600px"},
+                        ),
+                    ]
                 ),
             ],
             style={"marginTop": 20},
         ),
+        dbc.Placeholder(color="primary", className="me-1 mt-1 w-100"),
+        dbc.Container(
+            [html.H2("Incident Reports Over Months")],
+            style={"textAlign": "center", "marginTop": 20},
+        ),
         dbc.Row(
             [
-                html.H2("Incident Reports Over Months"),
                 dcc.Dropdown(
                     id="incident-dropdown",
                     options=[
@@ -185,7 +206,7 @@ def update_action_taken_chart(selected_incidents):
         count_df,
         x="action_taken",
         y="counts",
-        title="Count of Actions Taken for Selected Incident Types",
+        title="",
         labels={"counts": "Count of Actions Taken"},
         height=500,
     )
@@ -222,7 +243,7 @@ def update_map(selected_problems):
         color_discrete_sequence=["fuchsia"],
         zoom=10,
         center={"lat": 36.1540, "lon": -95.9928},
-        title="Incident Locations",
+        title="",
         mapbox_style="open-street-map",
     )
 
