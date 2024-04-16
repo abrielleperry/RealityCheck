@@ -59,7 +59,7 @@ app.layout = dbc.Container([
     dbc.Col(filters_layout, md=4),
     dbc.Col([
           dcc.Graph(id='incident-map',
-                    style={'width': '100%', 'height': '600px'})
+                    style={'width': '100%', 'height': '100%'})
         ], width=8)
     ])
 ])
