@@ -17,16 +17,15 @@ def initialize_data():
     static_df["incident"] = static_df["incident"].astype(str)
     static_df["date"] = pd.to_datetime(static_df["date"])
     static_df["month"] = static_df["date"].dt.strftime("%Y-%m")
-    monthly_incidents = (static_df.groupby(
-        ["month", "incident"]).size().reset_index(name="count"))
+    monthly_incidents = (
+        static_df.groupby(["month", "incident"]).size().reset_index(name="count")
+    )
 
     url = "https://www.cityoftulsa.org/apps/opendata/tfd_dispatch.jsn"
     live_df = pd.read_json(url)
     incidents = pd.json_normalize(live_df["Incidents"]["Incident"])
-    incidents["Latitude"] = pd.to_numeric(
-        incidents["Latitude"], errors="coerce")
-    incidents["Longitude"] = pd.to_numeric(
-        incidents["Longitude"], errors="coerce")
+    incidents["Latitude"] = pd.to_numeric(incidents["Latitude"], errors="coerce")
+    incidents["Longitude"] = pd.to_numeric(incidents["Longitude"], errors="coerce")
     incidents["ResponseDate"] = pd.to_datetime(
         incidents["ResponseDate"], format="%m/%d/%Y %I:%M:%S %p"
     )
@@ -42,63 +41,94 @@ def initialize_data():
 
 static_df, monthly_incidents, years, months, problems, incidents = initialize_data()
 
-app.layout = dbc.Container([html.H1("Interactive Incident Report"),
-                            dbc.Row([dbc.Col([html.Label("Select Incident Type:"),
-                                              dcc.Dropdown(id="incident-type-dropdown",
-                                    options=[{"label": i,
-                                              "value": i} for i in static_df["incident"].dropna().unique()],
-                                    value=static_df["incident"].dropna().unique()[0],
-                                    multi=True,
-                                    ),
-                                dcc.Graph(id="action-taken-bar-chart"),
+app.layout = dbc.Container(
+    [
+        html.H1("Interactive Incident Report"),
+        dbc.Row(
+            [
+                dbc.Col(
+                    [
+                        html.Label("Select Incident Type:"),
+                        dcc.Dropdown(
+                            id="incident-type-dropdown",
+                            options=[
+                                {"label": i, "value": i}
+                                for i in static_df["incident"].dropna().unique()
                             ],
-                                md=4,
-                            ),
-                                dbc.Col([html.Label("Select Year:"),
-                                         dcc.Dropdown(id="year-filter",
-                                                      options=[{"label": year,
-                                                                "value": year} for year in sorted(years)],
-                                                      value=sorted(years)[0],
-                                                      multi=False,
-                                                      ),
-                                         html.Label("Select Month:"),
-                                         dcc.Dropdown(id="month-filter",
-                                                      options=[{"label": month,
-                                                                "value": month} for month in sorted(months)],
-                                                      value=sorted(months)[0],
-                                                      multi=False,
-                                                      ),
-                                         html.Label("Select Problems:"),
-                                         dbc.Checklist(id="problem-filter",
-                                                       options=[{"label": "Unselect All",
-                                                                 "value": "None"},
-                                                                {"label": "Select All",
-                                                                 "value": "All"},
-                                                                ] + [{"label": problem,
-                                                                      "value": problem} for problem in problems],
-                                                       value=["All"],
-                                                       inline=False,
-                                                       ),
-                                         dcc.Graph(id="incident-map",
-                                                   style={"width": "100%",
-                                                          "height": "600px"},
-                                                   ),
-                                         ],
-                                        md=8,
-                                        ),
-                            ]),
-                            html.Div([html.H1("Live Incident Pie Chart"),
-                                      dcc.Graph(id="live-incident-pie-chart"),
-                                      ]),
-                            html.Div([html.H1("Incident Reports Over Time"),
-                                      dcc.Dropdown(id="incident-dropdown",
-                                                   options=[{"label": i,
-                                                             "value": i} for i in static_df["incident"].unique() if i is not None],
-                                                   value=static_df["incident"].unique()[0],
-                                                   ),
-                                      dcc.Graph(id="incident-over-months-chart"),
-                                      ]),
-                            ])
+                            value=static_df["incident"].dropna().unique()[0],
+                            multi=True,
+                        ),
+                        dcc.Graph(id="action-taken-bar-chart"),
+                    ],
+                    md=4,
+                ),
+                dbc.Col(
+                    [
+                        html.Label("Select Year:"),
+                        dcc.Dropdown(
+                            id="year-filter",
+                            options=[
+                                {"label": year, "value": year} for year in sorted(years)
+                            ],
+                            value=sorted(years)[0],
+                            multi=False,
+                        ),
+                        html.Label("Select Month:"),
+                        dcc.Dropdown(
+                            id="month-filter",
+                            options=[
+                                {"label": month, "value": month}
+                                for month in sorted(months)
+                            ],
+                            value=sorted(months)[0],
+                            multi=False,
+                        ),
+                        html.Label("Select Problems:"),
+                        dbc.Checklist(
+                            id="problem-filter",
+                            options=[
+                                {"label": "Unselect All", "value": "None"},
+                                {"label": "Select All", "value": "All"},
+                            ]
+                            + [
+                                {"label": problem, "value": problem}
+                                for problem in problems
+                            ],
+                            value=["All"],
+                            inline=False,
+                        ),
+                        dcc.Graph(
+                            id="incident-map",
+                            style={"width": "100%", "height": "600px"},
+                        ),
+                    ],
+                    md=8,
+                ),
+            ]
+        ),
+        html.Div(
+            [
+                html.H1("Live Incident Pie Chart"),
+                dcc.Graph(id="live-incident-pie-chart"),
+            ]
+        ),
+        html.Div(
+            [
+                html.H1("Incident Reports Over Months"),
+                dcc.Dropdown(
+                    id="incident-dropdown",
+                    options=[
+                        {"label": i, "value": i}
+                        for i in static_df["incident"].unique()
+                        if i is not None
+                    ],
+                    value=static_df["incident"].unique()[0],
+                ),
+                dcc.Graph(id="incident-over-months-chart"),
+            ]
+        ),
+    ]
+)
 
 
 def fetch_live_data():
@@ -116,16 +146,16 @@ def fetch_live_data():
     return fig
 
 
-@app.callback(Output("action-taken-bar-chart", "figure"),
-              Input("incident-type-dropdown", "value"))
+@app.callback(
+    Output("action-taken-bar-chart", "figure"), Input("incident-type-dropdown", "value")
+)
 def update_action_taken_chart(selected_incidents):
     if not isinstance(selected_incidents, list):
         selected_incidents = [selected_incidents]
     if not selected_incidents:
         return px.bar()
     filtered_df = static_df[static_df["incident"].isin(selected_incidents)]
-    count_df = filtered_df.groupby(
-        "action_taken").size().reset_index(name="counts")
+    count_df = filtered_df.groupby("action_taken").size().reset_index(name="counts")
     return px.bar(
         count_df,
         x="action_taken",
@@ -136,8 +166,9 @@ def update_action_taken_chart(selected_incidents):
     )
 
 
-@app.callback(Output("incident-over-months-chart", "figure"),
-              Input("incident-dropdown", "value"))
+@app.callback(
+    Output("incident-over-months-chart", "figure"), Input("incident-dropdown", "value")
+)
 def update_incidents_over_months_chart(selected_incident):
     filtered_data = monthly_incidents[
         monthly_incidents["incident"] == selected_incident
@@ -195,8 +226,7 @@ def update_live_incident_pie_chart(_):
 )
 def select_all_problems(selected_problems, options):
     if "All" in selected_problems and "None" not in selected_problems:
-        return [option["value"]
-                for option in options if option["value"] != "None"]
+        return [option["value"] for option in options if option["value"] != "None"]
     elif "None" in selected_problems:
         return []
     return selected_problems
