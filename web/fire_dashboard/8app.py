@@ -91,7 +91,7 @@ app.layout = dbc.Container(
                                 ),
                                 dcc.Graph(id="action-taken-bar-chart"),
                             ],
-                            md=5,
+                            width=6,
                             style={"padding": 10},
                         ),
                         dbc.Col(
