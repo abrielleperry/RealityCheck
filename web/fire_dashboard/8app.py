@@ -91,14 +91,14 @@ app.layout = dbc.Container(
                                 ),
                                 dcc.Graph(id="action-taken-bar-chart"),
                             ],
-                            width=6,
+                            md=6,
                             style={"padding": 10},
                         ),
                         dbc.Col(
                             [
                                 dcc.Graph(id="live-incident-pie-chart"),
                             ],
-                            md=7,
+                            md=6,
                             style={"padding": 10},
                         ),
                     ],
