@@ -11,6 +11,21 @@ app = Dash(
     title="Interactive Incident Report",
 )
 
+navbar = dbc.NavbarSimple(
+    #    children=[
+    #       dbc.NavItem(dbc.NavLink("Page 1", href="#")),
+    #      dbc.DropdownMenu(
+    #         nav=True,
+    #        in_navbar=True,
+    #       label="More",
+    #  ),
+    # ],
+    brand="Reality Check",
+    brand_href="#",
+    color="info",
+    dark=True,
+)
+
 
 def initialize_data():
     static_df = pd.read_csv("../data/fire.csv").dropna(subset=["incident"])
@@ -51,6 +66,7 @@ df, static_df, monthly_incidents, problems, incidents, pivot_table = initialize_
 
 app.layout = dbc.Container(
     [
+        navbar,
         html.H1(
             "Interactive Incident Report",
             style={"textAlign": "center", "marginTop": 20},
@@ -126,7 +142,7 @@ app.layout = dbc.Container(
             ],
             style={"marginTop": 20},
         ),
-        dbc.Placeholder(color="primary", className="me-1 mt-1 w-100"),
+        dbc.Placeholder(color="info", className="me-1 mt-1 w-100"),
         dbc.Container(
             [html.H2("Incident Reports Over Months")],
             style={"textAlign": "center", "marginTop": 20},
@@ -146,6 +162,7 @@ app.layout = dbc.Container(
             ],
             style={"marginTop": 20},
         ),
+        dbc.Placeholder(color="info", className="me-1 mt-1 w-100"),
         html.Div(
             [
                 html.H2("Time and Incident Correlation"),
@@ -161,6 +178,7 @@ app.layout = dbc.Container(
             ],
             style={"marginTop": 20},
         ),
+        dbc.Placeholder(color="info", className="me-1 mt-1 w-100"),
         html.Div(
             [
                 html.H2("Location Distribution"),
