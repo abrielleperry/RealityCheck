@@ -3,6 +3,7 @@ import plotly.express as px
 from dash import Dash, html, dcc, Input, Output, State
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
+import dash  # Ensure dash is imported
 
 # Initialize Dash application with Bootstrap
 app = Dash(
@@ -22,13 +23,18 @@ def initialize_data():
         .size()
         .reset_index(name="count")
     )
-    monthly_incidents.columns = ["month", "incident", "count"]  # Correct column names
+    monthly_incidents.columns = [
+        "month",
+        "incident",
+        "count"]  # Correct column names
 
     url = "https://www.cityoftulsa.org/apps/opendata/tfd_dispatch.jsn"
     live_df = pd.read_json(url)
     incidents = pd.json_normalize(live_df["Incidents"]["Incident"])
-    incidents["Latitude"] = pd.to_numeric(incidents["Latitude"], errors="coerce")
-    incidents["Longitude"] = pd.to_numeric(incidents["Longitude"], errors="coerce")
+    incidents["Latitude"] = pd.to_numeric(
+        incidents["Latitude"], errors="coerce")
+    incidents["Longitude"] = pd.to_numeric(
+        incidents["Longitude"], errors="coerce")
     incidents["ResponseDate"] = pd.to_datetime(
         incidents["ResponseDate"], format="%m/%d/%Y %I:%M:%S %p"
     )
@@ -36,7 +42,8 @@ def initialize_data():
     problems = incidents["Problem"].unique()
 
     # Prepare data for the heatmap
-    static_df["time"] = pd.to_datetime(static_df["time"], format="%H:%M:%S").dt.hour
+    static_df["time"] = pd.to_datetime(
+        static_df["time"], format="%H:%M:%S").dt.hour
     pivot_table = static_df.pivot_table(
         index="time", columns="incident", aggfunc="size", fill_value=0
     )
@@ -46,6 +53,9 @@ def initialize_data():
 
 static_df, monthly_incidents, problems, incidents, pivot_table = initialize_data()
 
+# Load the data for the location distribution chart
+df = pd.read_csv("../data/fire.csv")
+df = df[~df["location_name"].isin(["HSE", "0"])]
 
 # Define application layout
 app.layout = dbc.Container(
@@ -129,6 +139,16 @@ app.layout = dbc.Container(
                 dcc.Graph(id="heatmap-graph"),
             ]
         ),
+        # New layout section for the location distribution chart
+        html.Div(
+            [
+                html.H1("Location Distribution"),
+                dcc.Graph(
+                    id="location_name-chart",
+                    style={"height": "1000px"},  # Adjust height as needed
+                ),
+            ]
+        ),
     ]
 )
 
@@ -150,16 +170,16 @@ def fetch_live_data():
 
 
 # ACTION TAKEN
-@app.callback(
-    Output("action-taken-bar-chart", "figure"), Input("incident-type-dropdown", "value")
-)
+@app.callback(Output("action-taken-bar-chart", "figure"),
+              Input("incident-type-dropdown", "value"))
 def update_action_taken_chart(selected_incidents):
     if not isinstance(selected_incidents, list):
         selected_incidents = [selected_incidents]
     if not selected_incidents:
         return px.bar()
     filtered_df = static_df[static_df["incident"].isin(selected_incidents)]
-    count_df = filtered_df.groupby("action_taken").size().reset_index(name="counts")
+    count_df = filtered_df.groupby(
+        "action_taken").size().reset_index(name="counts")
     return px.bar(
         count_df,
         x="action_taken",
@@ -171,9 +191,8 @@ def update_action_taken_chart(selected_incidents):
 
 
 # INCIDENTS OVER MONTHS
-@app.callback(
-    Output("incident-over-months-chart", "figure"), Input("incident-dropdown", "value")
-)
+@app.callback(Output("incident-over-months-chart", "figure"),
+              Input("incident-dropdown", "value"))
 def update_incidents_over_months_chart(selected_incident):
     filtered_data = monthly_incidents[
         monthly_incidents["incident"] == selected_incident
@@ -210,9 +229,8 @@ def update_map(selected_problems):
 
 
 # LIVE PIE CHART
-@app.callback(
-    Output("live-incident-pie-chart", "figure"), [Input("problem-filter", "value")]
-)
+@app.callback(Output("live-incident-pie-chart", "figure"),
+              [Input("problem-filter", "value")])
 def update_live_incident_pie_chart(_):
     return fetch_live_data()
 
@@ -225,31 +243,68 @@ def update_live_incident_pie_chart(_):
 )
 def select_all_problems(selected_problems, options):
     if "All" in selected_problems and "None" not in selected_problems:
-        return [option["value"] for option in options if option["value"] != "None"]
+        return [option["value"]
+                for option in options if option["value"] != "None"]
     elif "None" in selected_problems:
         return []
     return selected_problems
 
 
 # TIME AND INCIDENT
-@app.callback(Output("heatmap-graph", "figure"), Input("time-range-slider", "value"))
+@app.callback(Output("heatmap-graph", "figure"),
+              Input("time-range-slider", "value"))
 def update_heatmap(time_range):
-    filtered_data = static_df[
-        (static_df["time"] >= time_range[0]) & (static_df["time"] <= time_range[1])
-    ]
+    filtered_data = static_df[(static_df["time"] >= time_range[0]) & (
+        static_df["time"] <= time_range[1])]
     filtered_pivot = filtered_data.pivot_table(
         index="time", columns="incident", aggfunc="size", fill_value=0
     )
     fig = px.imshow(
         filtered_pivot,
-        labels=dict(x="Incident Type", y="Hour of Day", color="Number of Incidents"),
+        labels=dict(
+            x="Incident Type",
+            y="Hour of Day",
+            color="Number of Incidents"),
         x=filtered_pivot.columns,
         y=filtered_pivot.index,
         aspect="auto",
     )
     fig.update_layout(
-        title="Correlation between Time of Day and Incident Types", xaxis_nticks=36
-    )
+        title="Correlation between Time of Day and Incident Types",
+        xaxis_nticks=36)
+    return fig
+
+
+@app.callback(
+    dash.dependencies.Output("location_name-chart", "figure"),
+    [dash.dependencies.Input("location_name-chart", "id")],
+)
+def update_area_chart(selected_property):
+    # Calculate the value counts of location names
+    location_name_counts = df["location_name"].value_counts().reset_index()
+    location_name_counts.columns = ["location_name", "count"]
+
+    # Filter to only include locations with more than 10 occurrences
+    filtered_counts = location_name_counts[location_name_counts["count"] > 100]
+
+    # Sort values in descending order
+    filtered_counts = filtered_counts.sort_values("count", ascending=False)
+
+    # Check if the DataFrame is empty after filtering
+    if filtered_counts.empty:
+        return px.bar(title="No data to display.")
+
+    # Create the horizontal bar chart
+    fig = px.bar(
+        filtered_counts,
+        x="count",
+        y="location_name",
+        title="Locations")
+
+    # Adjust x-axis range
+    max_count = filtered_counts["count"].max()
+    fig.update_xaxes(range=[0, max_count + 10])
+
     return fig
 
 
