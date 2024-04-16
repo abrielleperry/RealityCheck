@@ -25,7 +25,7 @@ Go into the fire-dashboard folder
 
 In your terminal, run:
 
-    ($) python3 8app.py
+    ($) python3 fire_app.py
 
 ## Step 4
 
