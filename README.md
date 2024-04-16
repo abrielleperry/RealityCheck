@@ -1,4 +1,4 @@
-# Welcome to![enter image description here](http://127.0.0.1:5500/web/images/readme_logo.png)
+# Welcome to Reality Check
 
 This repository contains the codebase for our Hack Sprint project. Our web application provides businesses with a powerful tool to visualize and analyze their data through a user-friendly dashboard.
 
@@ -43,7 +43,7 @@ Open file **index.html** with Live Server
 ## Step 6
 
 Explore our webpage and try our **LIVE DEMO'S** in **Services** to see **dashboard data and analysis**.
-![enter image description here](http://127.0.0.1:5500/web/images/readme_services.png)
+
 
 ## Authors
 
