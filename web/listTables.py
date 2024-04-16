@@ -3,6 +3,8 @@ import plotly.express as px
 import pandas as pd
 import xml.etree.ElementTree as ET
 import requests
+import data_processing as dp
+
 
 # Assuming `xml_data` is the XML string you've got from the URL
 app = Dash(__name__)
@@ -20,13 +22,20 @@ namespaces = {
 df = pd.read_xml(url, xpath='//app:collection', namespaces=namespaces)
 
 # If you print df, it should display a DataFrame with the 'href' attribute of each 'collection'
-print(df)
+#print(df)
+#print(df.columns)
 
 
 for index, row in df.iterrows():
     collection_url = row['href']
     # Here you would do something with each collection URL, such as fetching and processing the data
     print(collection_url)
+
+sales_order_df = dp.fetch_sales_order()
+print(sales_order_df.columns)
+
+order_details_df = dp.fetch_order_details()
+print(order_details_df.columns)
 
 # # Normalize nested JSON data
 # incidents = pd.json_normalize(df['Incidents']['Incident'])
