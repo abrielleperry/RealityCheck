@@ -3,15 +3,13 @@ import plotly.express as px
 from dash import Dash, html, dcc, Input, Output, State
 from dash.dependencies import Input, Output, State
 import dash_bootstrap_components as dbc
-import dash  # Ensure dash is imported
 import dash
 from dash import html, dcc
-import dash_bootstrap_components as dbc
 
 # Initialize Dash application with Bootstrap
 app = Dash(
     __name__,
-    external_stylesheets=[dbc.themes.BOOTSTRAP],
+    external_stylesheets=[dbc.themes.YETI],
     title="Interactive Incident Report",
 )
 
@@ -54,7 +52,6 @@ static_df, monthly_incidents, problems, incidents, pivot_table = initialize_data
 df = pd.read_csv("../data/fire.csv")
 df = df[~df["location_name"].isin(["HSE", "0"])]
 
-# Define application layout
 
 # Define application layout
 app.layout = dbc.Container(
