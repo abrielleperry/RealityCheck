@@ -17,7 +17,7 @@ def get_merged_df():
     merged_df = pd.merge(sales_order_df, order_details_df, on='OrderID')
 
     # Check columns after merge
-    # print(merged_df.columns)
+    #print(merged_df.columns)
 
     # If 'Gross_Revenue' column is not found, raise an error
     if 'LineTotal' not in merged_df.columns:
@@ -77,21 +77,51 @@ def calculate_gross_revenue(df):
         # Convert columns to numeric types, use errors='coerce' to handle any conversion issues
         df['UnitPrice'] = pd.to_numeric(df['UnitPrice'], errors='coerce')
         df['Quantity'] = pd.to_numeric(df['Quantity'], errors='coerce')
-        df['Discount'] = pd.to_numeric(df['Discount'], errors='coerce')        # Calculate the gross revenue for each line
-        
-        df['LineTotal'] = df['UnitPrice'] * df['Quantity'] * (1 - df['Discount'])
-        
+        df['DiscountPerc'] = pd.to_numeric(df['Discount'], errors='coerce')        # Calculate the gross revenue for each line
+        df['LineTotal'] = df['UnitPrice'] * df['Quantity']
+        df['DiscountDollars'] = df['LineTotal'] * df['DiscountPerc']
+        df['NetRevenue'] = df['LineTotal'] - df['DiscountDollars']
         # Sum up to get the total gross revenue
-        return df['LineTotal'].sum()
+        return df['LineTotal'].sum(), df['NetRevenue'].sum(), df['DiscountDollars'].sum()
     return 0
 
 def compute_daily_revenue(merged_df):
     # Assuming 'Order_Date' is a column in 'sales_order_df'
-
     # Ensure the 'OrderDate' column is converted to datetime objects
     merged_df['OrderDate'] = pd.to_datetime(merged_df['OrderDate'], errors='coerce')
-
 
     # Calculate daily gross revenue
     daily_revenue = merged_df.groupby(merged_df['OrderDate'].dt.date)['LineTotal'].sum()
     return daily_revenue.reset_index(name='LineTotal')
+
+def compute_location_netrevenue(merged_df):
+    # Assuming 'Order_Date' is a column in 'sales_order_df'
+    # Ensure the 'OrderDate' column is converted to datetime objects
+    merged_df['OrderDate'] = pd.to_datetime(merged_df['OrderDate'], errors='coerce')
+    # Calculate daily gross revenue
+    location_revenue = merged_df.groupby(merged_df['ShipCity'])['NetRevenue'].sum()
+    return location_revenue.reset_index(name='NetRevenue')
+
+def compute_location_grossrevenue(merged_df):
+    # Assuming 'Order_Date' is a column in 'sales_order_df'
+    # Ensure the 'OrderDate' column is converted to datetime objects
+    merged_df['OrderDate'] = pd.to_datetime(merged_df['OrderDate'], errors='coerce')
+    # Calculate daily gross revenue
+    location_revenue = merged_df.groupby(merged_df['ShipCity'])['LineTotal'].sum()
+    return location_revenue.reset_index(name='LineTotal')
+
+def compute_location_discount(merged_df):
+    # Assuming 'Order_Date' is a column in 'sales_order_df'
+    # Ensure the 'OrderDate' column is converted to datetime objects
+    merged_df['OrderDate'] = pd.to_datetime(merged_df['OrderDate'], errors='coerce')
+    # Calculate daily gross revenue
+    location_revenue = merged_df.groupby(merged_df['ShipCity'])['DiscountDollars'].sum()
+    return location_revenue.reset_index(name='DiscountDollars')
+
+def getcity(merged_df):
+    # Assuming 'Order_Date' is a column in 'sales_order_df'
+    # Ensure the 'OrderDate' column is converted to datetime objects
+    merged_df['OrderDate'] = pd.to_datetime(merged_df['OrderDate'], errors='coerce')
+    # Calculate daily gross revenue
+    location_city = merged_df.groupby(merged_df['ShipCity'])['ShipCity'].sum()
+    return location_city.reset_index(name='ShipCity')
