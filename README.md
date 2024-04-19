@@ -6,7 +6,7 @@ This repository contains the codebase for our Hack Sprint project. Our web appli
 
 The Reality Check Dashboard is designed to help businesses unlock the full potential of their data. With our platform, users can easily visualize representations of their data, including charts, graphs, and tables, allowing for better decision-making and strategic planning. This service is perfect for any business looking to gain a deeper understanding of their operations and enhance their performance through data-driven insights.  It is also a demo of how companies can have website applications deployed that are dynamic with real-time data, all without any added expense of any outside database services to pay for.  Granted, with only one week to work on this, our main objective was to open people's vision of what is possible.
 
-We used a variety of datasources including realtime API's with daily data refreshes from the Tulsa Fire Department showing types of incidents and locations in the last 24 hours.  In addition, the Tulsa Fire department sent us a year's worth of data in json format to use for data analysis.  In addition, though sales data is hard to get access to, we found for educational purposes a legacy database as an API in xml format (https://services.odata.org/V3/northwind/Northwind.svc/).  XML is extensively used for financial data, particularly in scenarios where data interchange among different systems is required. It allows for a structured representation of data and is used in financial reporting, configurations, and messaging systems like those in banking for transactions.
+We used a variety of datasources including realtime API's with daily data refreshes from the Tulsa Fire Department showing types of incidents and locations in the last 24 hours.  In addition, the Tulsa Fire department sent us a year's worth of data to use for data analysis.  In addition, though sales data is hard to get access to, we found for educational purposes a legacy database as an API in xml format (https://services.odata.org/V3/northwind/Northwind.svc/).  XML is extensively used for financial data, particularly in scenarios where data interchange among different systems is required. It allows for a structured representation of data and is used in financial reporting, configurations, and messaging systems like those in banking for transactions.
 
 Our intention was to simply show what can be done with the technologies we implemented that show a savings to any company .  The technologies implemented here include:  Flask for web app deployment; Dash for creating dashboards; Python programming for creating DataFrames used in reading, parsing, merging and manipulating and aggregating of data to then create graphs and dashboards that allow for better understanding of one's data.  A lot of experience was gained in data manipulation and some basic but powerful bar, line, time-series and geo-location graphs were done.  
 
@@ -51,7 +51,7 @@ from the web folder run:  python -m http.server 8000
 
 ## Step 6
 
-In order to launch all dashboards from a flask application with routes to localhost:5000/app1 and /app2 and for them to be accessible from buttons on our main index page.
+In order to launch dashboards from a flask application with routes to localhost:5000/app1 and /app2 and for them to be accessible from buttons on our main index page.
 
 please run from the web folder:  python3 ./flaskapp.py
 
