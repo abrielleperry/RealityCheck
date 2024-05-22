@@ -59,7 +59,6 @@ please run from the web folder:  python3 ./flaskapp.py
 
 Explore our webpage and try our **LIVE DEMO'S** in **Services** to see **dashboard data and analysis**.
 
-## Step 7
 
 
 ## Authors
